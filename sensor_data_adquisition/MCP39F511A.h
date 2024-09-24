@@ -30,6 +30,7 @@ struct data
 {
 	unsigned char system_status[2]; 
 	unsigned char system_version[2]; 
+	unsigned char voltage_rms[2]; 
 	unsigned char line_frequency[2]; 
 	unsigned char thermistor_voltage[2]; 
 	unsigned char power_factor[2]; 
@@ -56,7 +57,7 @@ struct response_frame
  * In this case, overflowing the variable actually gets the mod 256. 
  *
  */
-unsigned char checksum(unsigned char *rf);
+unsigned char checksum(unsigned char *rf, int num_bytes);
 
 struct read_frame* create_read_frame();
 void print_read_frame(struct read_frame* rf);

@@ -2,15 +2,13 @@
 #include<stdlib.h> 
 #include"MCP39F511A.h" 
 
-unsigned char checksum(unsigned char *rf) 
+unsigned char checksum(unsigned char *rf, int num_bytes) 
 {
 	unsigned char tmp = 0x00; 
-	size_t tam = sizeof(rf); 
 
-	for(size_t i = 0; i < tam; i++) 
+	for(int i = 0; i < num_bytes - 1; i++) 
 		tmp += rf[i]; 
 	return tmp; 
-
 }
 
 
@@ -32,7 +30,7 @@ struct read_frame* create_read_frame()
 	rf->addr.addr_low = 0x02;
 	rf->read.cmd_id = 0x4e; 
 	rf->read.num_of_bytes = 0x1c; 	// 28 decimal
-	rf->checksum = checksum((unsigned char*)rf); 	
+	rf->checksum = checksum((unsigned char*)rf, sizeof(struct read_frame));
 	return rf; 
 }
 
@@ -61,9 +59,9 @@ void print_read_frame(struct read_frame* rf)
 
 void print_readable_info_response(struct response_frame rf) 
 {
-	int dc_mode = ((1 << 15) & rf.data_readed.system_status[1]) > 0 ? 1 : 0; 
-	int sign_dccurr = ((1 << 14) & rf.data_readed.system_status[1]) > 0 ? 1 : 0; 
-	int sign_dcvolt = ((1 << 13) & rf.data_readed.system_status[1]) > 0 ? 1 : 0; 
+	int dc_mode = ((1 << 7) & rf.data_readed.system_status[1]) > 0 ? 1 : 0; 
+	int sign_dccurr = ((1 << 6) & rf.data_readed.system_status[1]) > 0 ? 1 : 0; 
+	int sign_dcvolt = ((1 << 5) & rf.data_readed.system_status[1]) > 0 ? 1 : 0; 
 	int sign_pr = ((1 << 5) & rf.data_readed.system_status[0]) > 0 ? 1 : 0; 
 	int sign_pa = ((1 << 4) & rf.data_readed.system_status[0]) > 0 ? 1 : 0; 
 
@@ -84,7 +82,7 @@ void print_readable_info_response(struct response_frame rf)
 		sign_pa ? "Positive (import) and is in quadrants 1, 4"
 		: "Negative (export) and is in quadrants 2, 3"); 
 
-	
+	int voltage_rms = get_value_from_byte_array(2, rf.data_readed.voltage_rms);
 	int line_frequency = get_value_from_byte_array(2, rf.data_readed.line_frequency); 
 	int thermistor_voltage = get_value_from_byte_array(2, rf.data_readed.thermistor_voltage); 
 	int power_factor = get_value_from_byte_array(2, rf.data_readed.power_factor); 
@@ -95,13 +93,14 @@ void print_readable_info_response(struct response_frame rf)
 
 
 	printf("\n\tVarible\t\t\tValue\n\n");
-	printf("\tLine Frequency\t\t%d\t\n", line_frequency); 
-	printf("\tThermistor Voltage\t%d\t\n", thermistor_voltage);
-	printf("\tPower Factor\t\t%d\t\n", power_factor);
-	printf("\tCurrent RMS\t\t%d\t\n", current_rms);
-	printf("\tActive Power\t\t%d\t\n", active_power);
-	printf("\tReactive Power\t\t%d\t\n", reactive_power);
-	printf("\tApparent Power\t\t%d\t\n", apparent_power);
+	printf("\tVoltage RMS\t\t%u\t\n", voltage_rms); 
+	printf("\tLine Frequency\t\t%u\t\n", line_frequency); 
+	printf("\tThermistor Voltage\t%u\t\n", thermistor_voltage);
+	printf("\tPower Factor\t\t%u\t\n", power_factor);
+	printf("\tCurrent RMS\t\t%u\t\n", current_rms);
+	printf("\tActive Power\t\t%u\t\n", active_power);
+	printf("\tReactive Power\t\t%u\t\n", reactive_power);
+	printf("\tApparent Power\t\t%u\t\n", apparent_power);
 
 
 }
