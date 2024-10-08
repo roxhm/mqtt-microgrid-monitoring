@@ -2,9 +2,9 @@
 #include<stdlib.h> 
 #include"MCP39F511A.h" 
 
-unsigned char checksum(unsigned char *rf, int num_bytes) 
+byte checksum(byte *rf, int num_bytes) 
 {
-	unsigned char tmp = 0x00; 
+	byte tmp = 0x00; 
 
 	for(int i = 0; i < num_bytes - 1; i++) 
 		tmp += rf[i]; 
@@ -23,14 +23,14 @@ struct read_frame* create_read_frame()
 		exit(0);
 	}
 
-	rf->header_byte = 0xa5; 
-	rf->num_of_bytes = 0x08;	// 8 decimal 
+	rf->header = 0xa5; 
+	rf->num_bytes = 0x08;	// 8 decimal 
 	rf->addr.cmd_id = 0x41; 
 	rf->addr.addr_high = 0x00;   
 	rf->addr.addr_low = 0x02;
 	rf->read.cmd_id = 0x4e; 
-	rf->read.num_of_bytes = 0x1c; 	// 28 decimal
-	rf->checksum = checksum((unsigned char*)rf, sizeof(struct read_frame));
+	rf->read.num_bytes = 0x1c; 	// 28 decimal
+	rf->checksum = checksum((byte*)rf, sizeof(struct read_frame));
 	return rf; 
 }
 
@@ -39,9 +39,9 @@ void print_read_frame(struct read_frame* rf)
 {
 	printf("\n\t Byte# \t Value \t Description \n\n"); 
 	printf("\t 1 \t %.2x \t Header Byte \n", 
-	       	rf->header_byte);
+	       	rf->header);
 	printf("\t 2 \t %.2x \t Number of bytes in frame \n", 
-	       	rf->num_of_bytes);
+	       	rf->num_bytes);
 	printf("\t 3 \t %.2x \t Command (Set Address Pointer) \n", 
 	       	rf->addr.cmd_id);
 	printf("\t 4 \t %.2x \t Address High \n", 
@@ -51,7 +51,7 @@ void print_read_frame(struct read_frame* rf)
 	printf("\t 6 \t %.2x \t Command (Register Read, n bytes) \n", 
 	       	rf->read.cmd_id);
 	printf("\t 7 \t %.2x \t Number of bytes to read \n", 
-	       	rf->read.num_of_bytes);
+	       	rf->read.num_bytes);
 	printf("\t 8 \t %.2x \t Checksum \n", 
 	       	rf->checksum); 
 }
@@ -105,7 +105,7 @@ void print_readable_info_response(struct response_frame rf)
 
 }
 
-int get_value_from_byte_array(size_t num_bytes, unsigned char* byte_array) 
+int get_value_from_byte_array(size_t num_bytes, byte* byte_array) 
 {
 	int pos_byte_high = num_bytes - 1; 
 	int pos_byte_low = 0; 
@@ -124,7 +124,7 @@ int get_value_from_byte_array(size_t num_bytes, unsigned char* byte_array)
 	return value; 
 }
 
-void print_frame(unsigned char* frame, size_t num_bytes) 
+void print_frame(byte* frame, size_t num_bytes) 
 {
 	printf("\n[ "); 
 	for(int i = 0; i < num_bytes; i++) 
