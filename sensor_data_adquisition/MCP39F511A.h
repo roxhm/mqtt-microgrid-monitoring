@@ -16,7 +16,7 @@ struct set_addr_ptr_cmdpkt
 	byte addr_low; 
 };
 
-struct read_frame 
+struct read_request_frame 
 {
 	byte header;
 	byte num_bytes;
@@ -42,13 +42,25 @@ struct data
 	byte apparent_power[4]; 
 };
 
-struct response_frame 
+struct read_response_frame 
 {
-	byte ack; 
+	byte response; 
 	byte num_bytes; 
 	struct data data_readed;  
 	byte checksum; 
 }; 
+
+struct variables
+{
+	float voltage_rms; 
+	float line_frequency; 
+	float thermistor_voltage; 
+	float power_factor; 
+	float current_rms; 
+	float active_power; 
+	float reactive_power; 
+	float apparent_power; 
+};
 
 
 /**
@@ -59,15 +71,20 @@ struct response_frame
  * In this case, overflowing the variable actually gets the mod 256. 
  *
  */
-byte checksum(byte *rf, int num_bytes);
+byte checksum(int num_bytes, byte* frame);
 
-struct read_frame* create_read_frame();
-void print_read_frame(struct read_frame* rf);
+struct read_request_frame* create_read_request_frame();
 
-void print_readable_info_response(struct response_frame rf);
+// TODO Please implement this fucking function. 
+// I'm sick of not to have the varibales ready to be sent.
+struct variables get_info_response(struct read_response_frame* rf);
+
 
 /**
  * Util functions. 
  */
-int get_value_from_byte_array(size_t num_bytes, byte* byte_array);
-void print_frame(byte* frame, size_t num_bytes); 
+void print_readable_info_response(struct read_response_frame* rf);
+
+void print_read_request_frame(struct read_request_frame* rf);
+int get_value_from_byte_array(int num_bytes, byte* array);
+void print_frame(int num_bytes, byte* frame); 
