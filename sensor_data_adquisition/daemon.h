@@ -1,0 +1,1 @@
+void ini_daemon();

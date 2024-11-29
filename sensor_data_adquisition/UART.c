@@ -16,34 +16,34 @@ int config_serial(char *dispositivo_serial, speed_t baudios)
 		exit(EXIT_FAILURE); 
 	}
 
-	newtermios.c_cflag = CBAUD | CS8 | CLOCAL | CREAD; 
-	newtermios.c_iflag = IGNPAR; 
-	newtermios.c_oflag = 0; 
-	newtermios.c_lflag = TCIOFLUSH | ~ICANON;
-	newtermios.c_cc[VMIN] = 1; 
-	newtermios.c_cc[VTIME] = 0;
+	newtermios.c_cflag 	= CBAUD | CS8 | CLOCAL | CREAD; 
+	newtermios.c_iflag 	= IGNPAR; 
+	newtermios.c_oflag 	= 0; 
+	newtermios.c_lflag 	= TCIOFLUSH | ~ICANON;
+	newtermios.c_cc[VMIN] 	= 1; 
+	newtermios.c_cc[VTIME] 	= 0;
 
 	if (cfsetospeed(&newtermios, baudios) == -1) 
 	{
-		printf("Error al establecer velocidad de salida\n"); 
+		printf("Error al establecer velocidad de salida.\n"); 
 		exit(EXIT_FAILURE); 
 	}
 
 	if (cfsetispeed(&newtermios, baudios) == -1) 
 	{
-		printf("Error al establecer velocidad de entrada\n"); 
+		printf("Error al establecer velocidad de entrada.\n"); 
 		exit(EXIT_FAILURE); 
 	}
 
 	if (tcflush(fd, TCOFLUSH) == -1) 
 	{
-		printf("Error al limpiar el buffer de salida\n"); 
+		printf("Error al limpiar el buffer de salida.\n"); 
 		exit(EXIT_FAILURE); 
 	}
 
 	if (tcsetattr(fd, TCSANOW, &newtermios) == -1) 
 	{
-		printf("Error al establecer los parametros de la terminal\n"); 
+		printf("Error al establecer los parámetros de la terminal.\n"); 
 		exit(EXIT_FAILURE); 
 	}
 

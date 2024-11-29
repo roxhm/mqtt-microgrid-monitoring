@@ -1,0 +1,31 @@
+#Este script debe ir en /etc/systemd/system
+[Unit]
+Description     = Demonio para la lectura de datos del sensor MCP39F511A y su envío a HiveMQ a través de mqtt.
+After		= syslog.target 
+
+[Service]
+#forking, describe el comportamiento tradicional de los
+#demonios en UNIX
+Type		= forking
+PIDFile		= /home/pi/mqtt-microgrid-monitoring/sensor_data_adquisition/sensor-mqtt-daemon.pid
+ExecStart	= /home/pi/mqtt-microgrid-monitoring/sensor_data_adquisition/sensor-mqtt-daemon
+Environment	= "LD_LIBRARY_PATH=/usr/local/lib/aarch64-linux-gnu"
+
+#Se manda SIGTERM al proceso principal y a todos los procesos 
+#del grupo
+KillMode	= mixed
+
+#on-failure, permite que el demonio se reinicie si 
+#se usa SIGKILL pero con SIGTERM no se reinicia
+#always, permite que el demonio se reinicie siempre
+#no importa que se use SIGKILL o SIGTERM
+
+Restart		= always
+RestartSec	= 5s
+
+#Se usa /dev/null para sistemas en produccion para no 
+#llenar el disco en lugar de syslog
+StandardOutput	= journal
+
+[Install]
+WantedBy	= multi-user.target
