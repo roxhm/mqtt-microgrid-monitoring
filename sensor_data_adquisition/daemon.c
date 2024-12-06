@@ -44,9 +44,12 @@ void ini_daemon()
 		printf("PID del segundo proceso hijo %d\n", pid);
 
 		//FILE* fp = fopen("/var/run/demonio.pid", "w");
-		FILE* fp = fopen("/home/pi/demonio/demoniod.pid", "w");
-		fprintf(fp, "%d", pid);
-		fclose(fp); 
+		FILE* fp = fopen("/home/pi/mqtt-microgrid-monitoring/sensor_data_adquisition/sensor-mqtt-daemond.pid", "w");
+		if(fp)
+		{
+			fprintf(fp, "%d\n", pid);
+			fclose(fp);
+		}	
 		exit(0);
 	}
 

@@ -7,8 +7,8 @@ After		= syslog.target
 #forking, describe el comportamiento tradicional de los
 #demonios en UNIX
 Type		= forking
-PIDFile		= /home/pi/mqtt-microgrid-monitoring/sensor_data_adquisition/sensor-mqtt-daemon.pid
-ExecStart	= /home/pi/mqtt-microgrid-monitoring/sensor_data_adquisition/sensor-mqtt-daemon
+PIDFile		= /home/pi/mqtt-microgrid-monitoring/sensor_data_adquisition/sensor-mqtt-daemond.pid
+ExecStart	= /home/pi/mqtt-microgrid-monitoring/sensor_data_adquisition/sensor-mqtt-daemond
 Environment	= "LD_LIBRARY_PATH=/usr/local/lib/aarch64-linux-gnu"
 
 #Se manda SIGTERM al proceso principal y a todos los procesos 
