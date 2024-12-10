@@ -12,7 +12,7 @@
 #include "daemon.h"
 
 #define URL_BROKER  "ssl://3.12.36.157:8883"
-#define ID_CLIENTE  "ClienteMQTTPublicador01"
+#define ID_CLIENTE  "MóduloSensor"
 #define QOS         1
 #define TIMEOUT     1000L
 
@@ -25,9 +25,9 @@ int main(int argc, char* argv[])
 {
 	ini_daemon(); 
 	
-	openlog("sensor-mqtt-demonio", LOG_NDELAY | LOG_PID, LOG_LOCAL0);
+	openlog("sensor-mqtt-daemon", LOG_NDELAY | LOG_PID, LOG_LOCAL0);
 	
-	syslog(LOG_INFO, "sensor-mqtt-demonio inicializado"); 
+	syslog(LOG_INFO, "sensor-mqtt-daemond inicializado"); 
 	
 	if(signal(SIGALRM, envia_datos) == SIG_ERR) 
 	{
@@ -145,7 +145,7 @@ void envia_datos(int sig)
 				exit(0);
 			}
 
-			syslog(LOG_INFO, "Esperando %d segundo para publicar el mensaje %s en el tema %s por el cliente con el identificador %s\n", (int)(TIMEOUT/1000), variable_string, topic, ID_CLIENTE);
+			syslog(LOG_INFO, "(%s) %s =  %s\n", ID_CLIENTE, topic, variable_string);
 			rc = MQTTClient_waitForCompletion(cliente, token, TIMEOUT);
 			syslog(LOG_INFO, "Mensaje con el token %d entregado\n", token);
 		}
