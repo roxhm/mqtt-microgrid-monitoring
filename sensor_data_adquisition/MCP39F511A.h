@@ -62,6 +62,16 @@ struct variables
 	float apparent_power; 
 };
 
+struct status
+{
+	char* dc_mode;
+	char* sign_dccurr; 
+	char* sign_dcvolt; 
+	char* sign_pr; 
+	char* sign_pa; 
+}; 
+
+
 
 /**
  * Checksum algorithm: 
@@ -75,8 +85,8 @@ byte checksum(int num_bytes, byte* frame);
 
 struct read_request_frame* create_read_request_frame();
 
-// TODO Please implement this fucking function. 
-// I'm sick of not to have the varibales ready to be sent.
+struct status get_status_from_response(struct read_response_frame* rf); 
+
 struct variables get_info_response(struct read_response_frame* rf);
 
 

@@ -81,12 +81,14 @@ struct variables get_info_response(struct read_response_frame* rf)
 	
 	voltage_rms = voltage_rms / 10.0; 
 	line_frequency = line_frequency / 1000.0; 
+	thermistor_voltage = thermistor_voltage / 10.0;
 	power_factor = power_factor * 0.00003051757813; 
 	current_rms = current_rms / 10000.0; 
 	active_power = active_power / 100.0; 
 	apparent_power = apparent_power / 100.0;
+	reactive_power = reactive_power / 100.0; 
 
-	reactive_power = (float)sqrt(pow(apparent_power, 2) - pow(active_power, 2));
+	//reactive_power = (float)sqrt(pow(apparent_power, 2) - pow(active_power, 2));
 
 	struct variables var = 
 	{
@@ -114,15 +116,34 @@ struct variables get_info_response(struct read_response_frame* rf)
 	return var; 
 }
 
+struct status get_status_from_response(struct read_response_frame* rf) 
+{
+	struct status var; 
+
+	int dc_mode 	= ((1 << 7) & rf->data_readed.system_status[1]) > 0 ? 1 : 0; 
+	int sign_dccurr = ((1 << 6) & rf->data_readed.system_status[1]) > 0 ? 1 : 0; 
+	int sign_dcvolt = ((1 << 5) & rf->data_readed.system_status[1]) > 0 ? 1 : 0; 
+	int sign_pr	= ((1 << 5) & rf->data_readed.system_status[0]) > 0 ? 1 : 0; 
+	int sign_pa	= ((1 << 4) & rf->data_readed.system_status[0]) > 0 ? 1 : 0; 
+
+	var.dc_mode = dc_mode ? "DC Mode" : "AC Mode"; 
+	var.sign_dccurr = sign_dccurr ? "Positive" : "Negative";
+	var.sign_dcvolt = sign_dcvolt ? "Positive" : "Negative"; 
+	var.sign_pr = sign_pr ? "Positive, inductive and is in quadrants 1, 2"
+			      : "Negative is capacitive and is in quadrants 3, 4"; 
+	var.sign_pa = sign_pa ? "Positive (import) and is in quadrants 1, 4"
+			      : "Negative (export) and is in quadrants 2, 3"; 	
+
+	return var; 
+}
 
 void print_readable_info_response(struct read_response_frame* rf) 
 {
 	int dc_mode 	= ((1 << 7) & rf->data_readed.system_status[1]) > 0 ? 1 : 0; 
 	int sign_dccurr = ((1 << 6) & rf->data_readed.system_status[1]) > 0 ? 1 : 0; 
 	int sign_dcvolt = ((1 << 5) & rf->data_readed.system_status[1]) > 0 ? 1 : 0; 
-	int sign_rp 	= ((1 << 5) & rf->data_readed.system_status[0]) > 0 ? 1 : 0; 
-	int sign_ap	= ((1 << 4) & rf->data_readed.system_status[0]) > 0 ? 1 : 0; 
-
+	int sign_pr 	= ((1 << 5) & rf->data_readed.system_status[0]) > 0 ? 1 : 0; 
+	int sign_pa	= ((1 << 4) & rf->data_readed.system_status[0]) > 0 ? 1 : 0; 
 
 	printf("\n");
 
@@ -135,10 +156,10 @@ void print_readable_info_response(struct read_response_frame* rf)
        	printf("\tSIGN_DCVOLT (Sign of DC Voltage RMS)\t%s\n",
 		sign_dcvolt ? "Positive" : "Negative"); 
        	printf("\tSIGN_PR (Sign of Reactive Power)\t%s\n",
-		sign_rp ? "Positive, inductive and is in quadrants 1, 2" 
+		sign_pr ? "Positive, inductive and is in quadrants 1, 2" 
 		: "Negative is capacitive and is in quadrants 3, 4"); 
        	printf("\tSIGN_P (Sign of Active Power)\t\t%s\n",
-		sign_ap ? "Positive (import) and is in quadrants 1, 4"
+		sign_pa ? "Positive (import) and is in quadrants 1, 4"
 		: "Negative (export) and is in quadrants 2, 3"); 
 
 	printf("\n");

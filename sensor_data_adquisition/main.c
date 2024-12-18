@@ -95,6 +95,53 @@ void envia_datos(int sig)
 			exit(0);
 		}
 
+		struct status var_status = get_status_from_response(response);
+
+		char* status_names[5] = 
+		{
+			"ModeOfTheMeter",
+			"SignOfDCCurrentRMS",
+			"SignOfDCVoltageRMS",
+			"SignOfReactivePower",
+			"SignOfActivePower"
+		}; 
+		char* status_values[5] = 
+		{
+			var_status.dc_mode, 
+			var_status.sign_dccurr, 
+			var_status.sign_dcvolt, 
+			var_status.sign_pr,
+			var_status.sign_pa
+		}; 
+		
+		for(int i = 0; i < 5; i++) 
+		{
+			MQTTClient_message pubmsg = MQTTClient_message_initializer;
+			pubmsg.payload = status_values[i];
+			pubmsg.payloadlen = (int)strlen(status_values[i]);
+			pubmsg.qos = QOS;
+			pubmsg.retained = 0;
+
+
+			char topic[50] = "";
+			char* microrred_name = "Microrred1";
+			strcat(topic, microrred_name); 
+			strcat(topic, "/");
+			strcat(topic, status_names[i]);	
+
+			if ((rc = MQTTClient_publishMessage(cliente, topic, &pubmsg, &token))
+			!= MQTTCLIENT_SUCCESS)
+			{
+				syslog(LOG_INFO, "Error al publicar el mensaje. Codigo de retorno: %d\n", rc);
+				exit(0);
+			}
+
+			syslog(LOG_INFO, "(%s) %s =  %s\n", ID_CLIENTE, topic, status_values[i]);
+			rc = MQTTClient_waitForCompletion(cliente, token, TIMEOUT);
+			syslog(LOG_INFO, "Mensaje con el token %d entregado\n", token);
+		}
+
+
 		char* topic_names[8] =
 		{
 			"VoltajeRMS",
